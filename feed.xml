@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN"><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://bakumon.me/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bakumon.me/" rel="alternate" type="text/html" hreflang="zh-CN" /><updated>2021-09-18T10:36:40+00:00</updated><id>https://bakumon.me/feed.xml</id><title type="html">食梦兽(BAKUMON)</title><subtitle>食梦兽的个人博客</subtitle><author><name>Bakumon</name></author><entry><title type="html">switch enum 导致的空指针异常</title><link href="https://bakumon.me/p/java-switch-enum-null-pointer-exception.html" rel="alternate" type="text/html" title="switch enum 导致的空指针异常" /><published>2021-07-15T00:00:00+00:00</published><updated>2021-07-15T00:00:00+00:00</updated><id>https://bakumon.me/p/java-switch-enum-null-pointer-exception</id><content type="html" xml:base="https://bakumon.me/p/java-switch-enum-null-pointer-exception.html">&lt;p&gt;今天遇到了一个不太常见的空指针异常，特此记录下来。&lt;/p&gt;
+
+&lt;h2 id=&quot;nullpointerexception&quot;&gt;NullPointerException&lt;/h2&gt;
+
+&lt;p&gt;异常如下：&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Fatal Exception: java.lang.NullPointerException
+Attempt to invoke virtual method 'int java.lang.Enum.ordinal()' on a null object reference
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;当看到这个异常时，第一反应是 ordinal() 是什么方法？我没调用过啊？？？&lt;/p&gt;
+
+&lt;p&gt;冷静下来通过报错位置的提示，发现异常出现在 switch(enum) 语句上。我们用以下示例代码说明：&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// 定义枚举类&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+  &lt;span class=&quot;no&quot;&gt;TOP&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOTTOM&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// 声明 Position 变量，用于记录控制类型&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Position&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mPosition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// foo 方法中对控制类型进行判断&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;switch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mPosition&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;TOP:&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;TOP&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;nl&quot;&gt;BOTTOM:&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;BOTTOM&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;不是 TOP 也不是 BOTTOM&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;异常原因分析&quot;&gt;异常原因分析&lt;/h2&gt;
+
+&lt;p&gt;以上代码首先定义了一个表示 &lt;strong&gt;位置类型&lt;/strong&gt; 的枚举类 Position，它有两个类型： TOP 和 BOTTOM。接着声明一个成员变量 mPosition，用来记录位置类型，每当位置改变时，就更新它的值。最后在一个方法里利用 switch 语句判断出位置类型的不同来执行不同的逻辑。&lt;/p&gt;
+
+&lt;p&gt;当我们还没有给 mPosition 赋值时，希望执行 foo() 方法打印 &lt;code class=&quot;highlighter-rouge&quot;&gt;不是 TOP 也不是 BOTTOM&lt;/code&gt;，但实际上当执行到 switch(mPosition) 就报出了上面所说的空指针异常。&lt;/p&gt;
+
+&lt;p&gt;这是为什么呢？原来 switch 语句判断的对象是不能为 null 的，这时候 mPosition 还没有被赋值，是空的，所以就出现了空指针异常。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;但是为什么空指针会发生在调用 ordinal() 方法时？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我们知道早期的 switch 语句只支持基本类型，从 Java 1.5 才开始支持 String 类型，但是还没有支持其他引用类型。枚举其实是一种特殊的类，也就是引用类型，我们却可以把枚举用在 switch 语句中，这显然是矛盾的。&lt;/p&gt;
+
+&lt;p&gt;这个矛盾的根源来自于 JVM。JVM 为了让 switch 语句支持枚举，当发现 switch 语句判断的是枚举时，会调用枚举对象的 ordinal() 方法，这个方法返回 int 值（表示顺序），用 int 来判断，这就回到了基本类型。&lt;/p&gt;
+
+&lt;p&gt;所以我们看到了空指针异常发生在 &lt;code class=&quot;highlighter-rouge&quot;&gt;int java.lang.Enum.ordinal()&lt;/code&gt; 调用时。&lt;/p&gt;
+
+&lt;h2 id=&quot;如何避免&quot;&gt;如何避免&lt;/h2&gt;
+
+&lt;p&gt;在使用 switch 语句判断 String 或 enum 时，一定要保证值不能为空，上面的示例代码中，我们为了保证 mPosition 不为空，可以在声明时就初始化值，如果初始值是 TOP 或 BOTTOM 都不合适的话，可以加一种枚举类型（如 NONE）作初始值，同时也表示没有位置类型。&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Position&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; 
+  &lt;span class=&quot;no&quot;&gt;TOP&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;BOTTOM&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;NONE&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 初始化赋值&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Position&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mPosition&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;NONE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这样就保证初始时不为 null 了，并且后续赋值时，也要避免赋空值。&lt;/p&gt;</content><author><name>Bakumon</name></author><category term="Java" /><summary type="html">今天遇到了一个不太常见的空指针异常，特此记录下来。</summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="https://i.loli.net/2021/07/16/LZziY7JkXeRBpsN.png" /></entry></feed>
